@@ -1,0 +1,418 @@
+@charset "UTF-8";
+/* 余白・文字の大きさ・部品の形は、アメブロ検索(ameblo.karin-archive.com)の style.css にそろえる。
+   違うのは色だけ。色は --accent の1色から作り(下の --cell* も)、--accent を変えれば全体が変わる */
+:root {
+  /* 端末がダークモードでも常に明るい配色で出す(ブラウザの自動ダーク化も止める) */
+  color-scheme: only light;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #1f1f1f;
+  --muted: #6b6b6b;
+  --line: #e3e3e3;
+  /* アイコン(白から黒への濃淡)と OGP(白地に黒)に合わせた無彩色 */
+  --accent: #161616;
+  --beige: #d9d9d9;
+  --accent-ink: #ffffff;
+  --mark: #fff0a8;
+  --mark-ink: #1f1f1f;
+  /* 淡い〜濃いの段階(選んだ人の札・カレンダー)。アメブロ検索は緑の段階を持つが、ここは --accent から混ぜて作る */
+  --cell0: #f0f0ec;
+  --cell1: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  --cell2: color-mix(in srgb, var(--accent) 48%, var(--surface));
+  --cell3: color-mix(in srgb, var(--accent) 74%, var(--surface));
+  --cell4: var(--accent);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }   /* 一覧の長さでスクロールバーが出入りしても、横にずれないように */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* Webフォントは読み込まない(端末の標準のフォントで出す) */
+  font-family: "Proxima Nova", Arial, Tahoma, "PingFang SC", sans-serif;
+  line-height: 1.7;
+}
+main, .site-head, .site-foot { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+.site-head { padding-top: 28px; padding-bottom: 8px; }
+.site-head h1 { margin: 0; font-size: 1.5rem; letter-spacing: .02em; }
+.site-head h1 a { color: inherit; text-decoration: none; }
+.lead { margin: 4px 0 0; color: var(--muted); font-size: .92rem; }
+.lead.sec { font-size: .85rem; margin-top: 6px; }
+.lead a { color: inherit; }
+
+.search {
+  margin: 16px 0 8px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.q-row { display: flex; gap: 8px; }
+input, select, button { font: inherit; color: var(--text); }
+.q-row input {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.05rem;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.q-row input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+select {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 8px;
+  max-width: 60vw;
+}
+.ghost {
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  font-weight: 400;
+  font-size: .82rem;
+  white-space: nowrap;
+}
+.ghost:hover { color: var(--accent); border-color: var(--accent); }
+.hint { margin: 0; font-size: .8rem; color: var(--muted); }
+
+/* ---- メンバー選択(アメブロ検索の .tag・.panel・.chip と同じ形) ---- */
+.gbtn[hidden], .gaccs[hidden], .picked[hidden] { display: none; }   /* display:flex が hidden を打ち消すのを防ぐ */
+.gbtn, .gaccs, .picked { display: flex; flex-wrap: wrap; gap: 6px; }
+.gb, .ab {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-weight: 400;
+  font-size: .85rem;
+  line-height: 1.7;
+}
+/* 選ぶと太字になっても幅が変わらないよう、太字の文字の幅を見えない行で先に取っておく */
+.gb, .ab, .gitem .gname { display: inline-flex; flex-direction: column; align-items: center; }
+.gb::after, .ab::after, .gitem .gname::after {
+  content: attr(data-label); height: 0; overflow: hidden; visibility: hidden; font-weight: 600;
+}
+.gb:hover, .ab:hover { border-color: var(--accent); }
+.gb.on, .ab.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+/* グループの中に選んでいる人がいる(開いていない)状態 */
+.gb.has:not(.on) { border-color: var(--accent); color: var(--accent); }
+.ab.off:not(.on) { color: var(--muted); }
+.gaccs {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.picked { align-items: center; font-size: .82rem; }
+.plabel { color: var(--muted); }
+.pk {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--cell1);
+  color: var(--text);
+  font-weight: 400;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+.pk:hover { background: var(--accent); color: var(--accent-ink); }
+.other { align-self: flex-start; max-width: 100%; }
+.gb[hidden] { display: none; }
+.chk { display: flex; align-items: center; gap: 4px; font-size: .9rem; color: var(--muted); }
+.chk input { accent-color: var(--accent); width: 16px; height: 16px; }
+#other option.off { color: var(--muted); }
+/* ---- 検索欄の下の行・メンバー選択のパネル(アメブロ検索と同じ形) ---- */
+.opts { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; align-items: center; font-size: .9rem; color: var(--muted); }
+.opts label { display: flex; align-items: center; gap: 6px; }
+.opts .chk { gap: 4px; }
+.pick-open {
+  padding: 5px 12px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-weight: 400;
+  font-size: .9rem;
+}
+.pick-open[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.panel { margin-top: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.panel[hidden] { display: none; }
+.panel > * + * { margin-top: 10px; }
+.panel .gaccs { padding: 0; border: 0; }
+/* 「その他のアカウント」と同じ行の右端に「閉じる」(一番下の行を増やさない) */
+.panel-r { display: flex; align-items: center; gap: 8px; }
+.panel-r .other { flex: 1; min-width: 0; }
+.panel-r #pick-close { margin-left: auto; flex: none; }
+.gall { flex-basis: 100%; display: flex; justify-content: flex-end; }
+.panel .other { display: block; }
+.panel .other[hidden] { display: none; }
+.picked { margin-top: 10px; }
+.dfield { display: flex; align-items: center; gap: 6px; }
+.dfield[hidden] { display: none; }
+.dsel { display: inline-flex; gap: 2px; }
+/* 選ぶ前後で幅が変わって画面が動かないよう、いちばん長い選択肢の幅に固定しておく */
+.dsel .y { width: 5.7em; }
+.dsel .m { width: 4.3em; }
+.dsel select:disabled { opacity: .5; }
+.dsel select { max-width: none; padding: 5px 4px; }
+
+/* ---- カレンダー(アメブロ検索の .cal・.days と同じ形) ---- */
+.cal {
+  margin: 12px 0;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+/* 年が左・月が上の表(アメブロ検索の .years と同じ形) */
+.years { display: grid; grid-template-columns: 3.2em repeat(12, minmax(0, 1fr)); gap: 3px; margin-bottom: 14px; font-size: .72rem; }
+.years .yl { color: var(--muted); align-self: center; font-variant-numeric: tabular-nums; }
+.years .mh { color: var(--muted); text-align: center; }
+.years:empty { display: none; }
+.ymc, .day {
+  padding: 0; border: 1px solid transparent; border-radius: 4px;
+  background: var(--cell0); color: var(--text); font: inherit; font-weight: 400; line-height: 1.2;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.ymc { min-height: 26px; }
+.ymc:disabled { cursor: default; }
+.ymc.cur { box-shadow: inset 0 -2px 0 var(--text); }
+.cal-head { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.cal-head strong { flex: 1; text-align: center; font-size: .95rem; }
+.cal-head button { background: transparent; color: var(--accent); padding: 4px 10px; border: 1px solid var(--line); font-weight: 400; }
+.cal-head button:disabled { opacity: .3; cursor: default; }
+.cal-head .latest { margin-left: 6px; font-size: .78rem; padding: 4px 8px; white-space: nowrap; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin-bottom: 6px; font-size: .8rem; }
+.cal-grid .dow { text-align: center; font-size: .72rem; color: var(--muted); }
+/* 日付の横に件数(アメブロ検索の .days と同じ「日/件数件」) */
+.day { min-height: 30px; display: flex; align-items: center; justify-content: center; }
+.day:disabled { cursor: default; color: var(--muted); }
+.day small { font-size: .68rem; opacity: .85; margin-left: 1px; }
+/* 投稿のある月・日は4段階(アメブロ検索と同じ)。少ないほどアイコンのベージュ、多いほど茶色。
+   l1・l2 は黒字、l3・l4 は白字(どれも 4.5:1 以上) */
+.ymc.l1, .day.l1 { background: var(--beige); }
+.ymc.l2, .day.l2 { background: color-mix(in srgb, var(--accent) 35%, var(--beige)); }
+.ymc.l3, .day.l3 { background: color-mix(in srgb, var(--accent) 75%, var(--beige)); color: var(--accent-ink); }
+.ymc.l4, .day.l4 { background: var(--accent); color: var(--accent-ink); }
+.ymc.sel, .day.sel { border-color: var(--text); }
+/* スマホの幅では、4桁の月の数・3桁の日の数がマスに収まるように詰める(日の「件」は省く) */
+@media (max-width: 480px) {
+  .years { grid-template-columns: 2.4em repeat(12, minmax(0, 1fr)); gap: 2px; font-size: .6rem; letter-spacing: -.03em; }
+  .day small .u { display: none; }
+}
+.day.today span:first-child { text-decoration: underline; }
+
+/* ---- 一覧(アメブロ検索の .results と同じカードの形) ---- */
+.list { list-style: none; margin: 0; padding: 0; }
+.list li {
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.co-x { margin: 0 6px 0 -2px; font-size: .8rem; color: var(--muted); }
+.meta { font-size: .8rem; color: var(--muted); margin-right: 6px; font-variant-numeric: tabular-nums; }   /* 数字の幅をそろえる(名前の位置が、時刻によってずれない) */
+.name {
+  padding: 0; margin-right: 8px; border: 0; background: none; color: var(--text);
+  font-size: .8rem; font-weight: 600; text-decoration: underline dotted; cursor: pointer;
+}
+/* 名前を押したときの小さなメニュー(暫定) */
+.list li { position: relative; }
+.nmenu {
+  position: absolute; z-index: 10; left: 16px; right: 16px; max-width: 320px; margin-top: 4px;
+  display: flex; flex-direction: column; padding: 4px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+}
+.nmenu button, .nmenu a {
+  display: block; padding: 8px 10px; border-radius: 6px; text-align: left;
+  background: transparent; color: var(--text); font-weight: 400; font-size: .88rem; text-decoration: none;
+}
+.nmenu button:hover, .nmenu a:hover, .nmenu button:focus-visible, .nmenu a:focus-visible { background: var(--cell0); }
+.nmenu a { color: var(--accent); }
+.type { font-size: .72rem; padding: 0 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); }
+/* 仕組みのページの、コードの表示 */
+main.doc code { font-size: .86em; background: var(--cell0); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+main.doc pre { overflow-x: auto; background: var(--cell0); padding: 12px 14px; border-radius: 8px; font-size: .8rem; line-height: 1.6; }
+main.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+/* 本文の抜粋は黒い文字(リンクにしない)。トップと /day 共通 */
+.list .text, .results .text { margin: 2px 0 0; font-size: .92rem; color: var(--text); overflow-wrap: anywhere; }
+/* 投稿の下の操作の行:「▶ ここで見る」と「TikTok で見る ↗」 */
+.acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 8px; }
+.see {
+  padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--muted); font-weight: 400; font-size: .78rem;
+}
+.see:hover { color: var(--accent); border-color: var(--accent); }
+.open { font-size: .78rem; color: var(--accent); }
+/* 公式の埋め込みは、暗い背景のポップアップで開く(幅 326〜540px。スマホでは画面いっぱいまで)。
+   ‹ › で一覧の前後の投稿へ。閉じるのは ×・背景・Esc */
+.emodal-open { overflow: hidden; }
+.emodal {
+  /* 縦長(9:16)の枠。高さは画面に合わせ、幅はそこから決める(先に大きさが決まるので、動かない) */
+  --card-h: min(calc(100vh - 110px), 760px);
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; grid-template-columns: auto calc(var(--card-h) * 9 / 16) auto; align-items: center; justify-content: center;
+  grid-template-areas: "prev card next" ". link ."; gap: 12px; padding: 16px; align-content: center;
+}
+@supports (height: 100dvh) { .emodal { --card-h: min(calc(100dvh - 110px), 760px); } }
+.emodal-bg { position: absolute; inset: 0; background: rgb(84, 87, 90); }
+/* 表の枠。前後の投稿のカードも、見えない状態で同じ場所に重ねて、先に読み込んでおく */
+.emodal-stage { grid-area: card; position: relative; z-index: 1; min-width: 0; height: var(--card-h); }
+.emodal-card { position: absolute; inset: 0; visibility: hidden; pointer-events: none; overflow: hidden; background: #000; border-radius: 12px; }
+.emodal-card.on { visibility: visible; pointer-events: auto; }
+.emodal-card > iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* 読み込み中は、枠の真ん中に「くるくる」 */
+.emodal-card:not(.ready)::before {
+  content: ""; position: absolute; top: calc(50% - 15px); left: calc(50% - 15px); width: 30px; height: 30px;
+  border: 3px solid rgba(255, 255, 255, .25); border-top-color: #fff; border-radius: 50%; animation: emspin .8s linear infinite;
+}
+@keyframes emspin { to { transform: rotate(360deg); } }
+/* 読み込めなかったときは、くるくるの代わりに案内 */
+.emodal-card.fail:not(.ready)::before {
+  content: "埋め込みを表示できませんでした。右下の「TikTok で見る ↗」から見てください。";
+  inset: 0; width: auto; height: auto; border: 0; border-radius: 0; animation: none; padding: 24px;
+  display: flex; align-items: center; justify-content: center; text-align: center; color: #fff;
+}
+.emodal-prev, .emodal-next, .emodal-x {
+  position: relative; z-index: 1; width: 44px; height: 44px; padding: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, .92); color: #1f1f1f; font-size: 1.5rem; line-height: 1; font-weight: 400;
+}
+/* ‹ › は、小さな白い丸に、細い矢印 */
+.emodal-prev, .emodal-next { width: 32px; height: 32px; background: #fff; font-size: 0; }
+.emodal-prev::before, .emodal-next::before {
+  content: ""; display: block; width: 8px; height: 8px; margin: 0 auto;
+  border-top: 1.5px solid #262626; border-right: 1.5px solid #262626;
+}
+.emodal-next::before { transform: translateX(-2px) rotate(45deg); }
+.emodal-prev::before { transform: translateX(2px) rotate(-135deg); }
+.emodal-link {
+  grid-area: link; justify-self: end; position: relative; z-index: 1; margin-top: -4px;
+  padding: 7px 14px; border-radius: 999px; background: rgba(255, 255, 255, .92); color: #1f1f1f;
+  font-size: .85rem; text-decoration: none; white-space: nowrap;
+}
+.emodal-link:hover { background: #fff; }
+.emodal-prev { grid-area: prev; }
+.emodal-next { grid-area: next; }
+.emodal-prev:disabled, .emodal-next:disabled { opacity: .3; cursor: default; }
+.emodal-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 40px; height: 40px; font-size: 1.4rem; }
+.emodal-count { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 1; text-align: center; font-size: .8rem; color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; pointer-events: none; }
+/* 狭い画面では、‹ › をカードの下に並べる */
+@media (max-width: 700px) {
+  .emodal { --card-h: min(calc(100vh - 190px), calc(100vw * 16 / 9)); grid-template-columns: 1fr 1fr; grid-template-areas: "card card" "link link" "prev next"; align-content: center; padding: 12px 0 36px; row-gap: 10px; }
+  .emodal-stage { width: calc(var(--card-h) * 9 / 16); justify-self: center; }
+  @supports (height: 100dvh) { .emodal { --card-h: min(calc(100dvh - 190px), calc(100vw * 16 / 9)); } }
+  .emodal-link { margin-right: 16px; }
+  .emodal-prev { justify-self: end; margin-right: 16px; }
+  .emodal-next { justify-self: start; margin-left: 16px; }
+}
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 1px; border-radius: 2px; }
+.status { min-height: 1.7em; margin: 12px 2px; font-size: .9rem; color: var(--muted); }
+.more { display: block; margin: 8px auto 24px; background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.more[hidden] { display: none; }   /* 上の display: block が hidden 属性に勝ってしまうため */
+
+.site-foot { padding-top: 16px; padding-bottom: 40px; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); margin-top: 24px; }
+.site-foot p { margin: 4px 0; }
+.site-foot a { color: inherit; }
+
+/* ---------- 説明ページ(/about・/tech) ---------- */
+main.doc { line-height: 1.8; }
+.doc-lead { font-size: 1.05rem; margin: 0 0 28px; color: var(--text); }
+main.doc h2 { margin-top: 32px; margin-bottom: 12px; font-size: 1.3rem; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+main.doc h3 { margin-top: 20px; margin-bottom: 8px; font-size: 1.1rem; }
+main.doc h3 + p { margin-top: 0; }
+main.doc p { margin: 8px 0; }
+main.doc ul, main.doc ol { margin: 8px 0; padding-left: 24px; }
+main.doc li { margin: 6px 0; }
+main.doc a { color: var(--accent); }
+.note { font-size: .92rem; color: var(--muted); margin-top: 12px; }
+main.doc strong { color: var(--accent); font-weight: 600; }
+main.doc em { font-style: italic; }
+
+/* ---------- 日付で見る(/day) ---------- */
+main.wide, .site-head.wide, .site-foot.wide { max-width: 1040px; }
+.daybar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 4px; }
+.daybar input[type="date"] {
+  font-size: 1rem; padding: 6px 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text);
+}
+.daybar button:disabled { opacity: .35; cursor: default; }
+.daygrid { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
+.gnav { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 2px; margin-top: 12px; }
+.gitem {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%;
+  padding: 7px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--text);
+  font-weight: 400; font-size: .9rem; text-align: left;
+}
+.gitem:hover { background: var(--cell0); }
+.gitem.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.gitem .n { font-size: .78rem; opacity: .7; font-weight: 400; font-variant-numeric: tabular-nums; }
+.results { list-style: none; margin: 0; padding: 0; }
+/* 読み込み中の空の一覧。高さが無いと下の部分が上がってきてページが揺れる */
+.results:empty { min-height: 70vh; }
+/* 次の結果が届くまで前の結果を薄く残す(一覧を空にすると画面が詰まってピクッと動くため) */
+.results.loading { opacity: .45; transition: opacity .15s; }
+.results li {
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.results .meta { margin: 0 0 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; font-size: .8rem; color: var(--muted); }
+.results .meta time { font-variant-numeric: tabular-nums; }
+.results .meta .who { color: var(--text); font-weight: 600; }
+/* 狭い画面ではグループを上に横並びにして、横にスクロールさせる */
+@media (max-width: 720px) {
+  .daygrid { grid-template-columns: 1fr; gap: 0; }
+  .gnav {
+    position: static; flex-direction: row; overflow-x: auto; gap: 6px;
+    margin: 8px -16px 0; padding: 0 16px 6px; scrollbar-width: thin;
+  }
+  .gitem { width: auto; flex: none; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
+  .gitem.on { border-color: var(--accent); }
+}
+
+/* フッターの「このサイトを紹介する」 */
+.site-foot .share { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 10px 0; }
+.site-foot .share .ghost { padding: 3px 10px; font-size: .78rem; }
+
+/* ---------- 削除・公開停止の依頼フォーム(about。アメブロ検索と同じ) ---------- */
+.td { display: grid; gap: 10px; margin: 12px 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.td label { display: grid; gap: 4px; font-size: .88rem; color: var(--muted); }
+.td input, .td textarea {
+  font: inherit; font-size: 1rem; color: var(--text); padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+}
+.td input:focus, .td textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.td button { justify-self: start; }
+.td button:disabled { opacity: .5; }
+.td .note { margin: 0; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* 仕組み(tech)の、APIの項目の表 */
+.spec { border-collapse: collapse; width: 100%; font-size: .85rem; margin: 8px 0; }
+.spec th, .spec td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; line-height: 1.5; }
+.spec th { color: var(--muted); font-weight: 600; }
+.spec code { white-space: nowrap; }
+@media (max-width: 600px) { .spec, .spec tbody, .spec tr, .spec td { display: block; width: 100%; } .spec thead { display: none; } .spec tr { padding: 6px 0; border-bottom: 1px solid var(--line); } .spec td { border: 0; padding: 1px 0; } .spec td:nth-child(3) { color: var(--muted); } }
+
+/* 楽曲の行(TikTok 版だけ)。1行で、長い名前は省く。高さが変わらないように */
+.music { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 0; font-size: .78rem; }
+.music button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 0; background: none; padding: 0; font: inherit; color: var(--muted); cursor: pointer; text-align: left; }
+.music button:hover { text-decoration: underline; }
+.music a { flex: none; color: var(--accent); text-decoration: none; }

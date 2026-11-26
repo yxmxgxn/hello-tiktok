@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+<meta name="robots" content="noindex, nofollow">
+<title>このサイトについて - ハロプロ TikTok検索</title>
+<meta name="description" content="ハロプロ TikTok検索の説明書。何ができて、誰の投稿を収録していて、何を保存しないのか。ハロー！プロジェクトのメンバーとOGのTikTokを日付と本文から探すための非公式サイトです。">
+<meta property="og:title" content="このサイトについて - ハロプロ TikTok検索">
+<meta property="og:description" content="ハロプロ TikTok検索の説明書。何ができて、誰の投稿を収録していて、何を保存しないのか。ハロー！プロジェクトのメンバーとOGのTikTokを日付と本文から探すための非公式サイトです。">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://tiktok.karin-archive.com/about">
+<meta property="og:url" content="https://tiktok.karin-archive.com/about">
+<meta property="og:image" content="https://tiktok.karin-archive.com/ogp.png">
+<meta property="og:site_name" content="ハロプロ TikTok検索">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="site-head">
+  <h1><a href="/">ハロプロ TikTok検索</a></h1>
+  <p class="lead">このサイトについて</p>
+  <p class="lead sec"><a href="/tech">仕組み</a> ｜ <a href="/">検索に戻る</a></p>
+</header>
+
+<main class="doc">
+  <p class="doc-lead">
+    ハロー！プロジェクトのメンバーとOGのTikTokを、<strong>日付と本文から</strong>探せるようにしたサイトです。
+    <strong>収録しているアカウントを横断して</strong>、日付・メンバー・本文・楽曲で探せます。
+    <span id="scale"></span>
+  </p>
+
+  <h2>できること</h2>
+
+  <h3>新着を眺める</h3>
+  <p>
+    何も指定しない状態だと、収録しているアカウント全部の投稿が新しい順に並びます。
+    100件ずつ表示し、続きは一番下の「さらに古い投稿」で読み込みます。
+    「並び」を「古い順」にすると、古い投稿から並びます。
+  </p>
+
+  <h3>本文から探す</h3>
+  <p>
+    空白で区切ると、すべての語を含む投稿を探します。語の頭に「-」を付けると、その語を含む投稿を除きます（例: <code>音楽 -CD</code>）。
+    語は2文字以上にしてください。ハッシュタグは「#」を付けなくても当たります。
+  </p>
+
+  <h3>メンバー・期間で絞る</h3>
+  <p>
+    「メンバー選択」でグループやメンバーを選べます。「ハロプロ現役のみ」もあります。
+    カレンダーと「いつから」「いつまで」で、期間を絞れます。
+  </p>
+
+  <h3>同じ音源の投稿を見る</h3>
+  <p>
+    投稿の下の曲名（♪）を押すと、<strong>同じ音源を使った投稿</strong>だけが並びます。横の「↗」は、TikTok の曲のページを開きます。
+    同じ曲でも、配信されている音源・切り抜き・本人が録った音源などで分かれていることがあり、その場合は別々に並びます。
+  </p>
+
+  <h3>日付で見る</h3>
+  <p><a href="/day">日付で見る</a>では、選んだ日の投稿が時刻の順に並びます。日付と時刻は日本時間です。</p>
+
+  <h3>投稿を見る</h3>
+  <p>
+    「▶ ここで見る」を押すと、TikTok の公式の埋め込みプレーヤーが開きます。「‹」「›」で前後の投稿に移れます。
+    前後の投稿は、裏で先に読み込みます（通信量を節約する設定のときは読み込みません）。
+  </p>
+
+  <h2>誰の投稿を収録しているか</h2>
+  <p>
+    ハロー！プロジェクトの現役グループの公式アカウント、メンバーとOG、関連する公式アカウントのうち、
+    作者が持っている「SNS一覧」に TikTok があるものを中心に、作者が選んでいます。
+  </p>
+
+  <h2>収録しているもの</h2>
+  <p>投稿の本文、投稿した日時、投稿のURL、アカウント名、楽曲の番号・曲名・アーティスト名・オリジナル音源かどうかです。</p>
+
+  <h2>収録していないもの</h2>
+  <p>動画・画像・音声は保存しません。再生数・いいね数・コメント・フォロワー数も取っていません。</p>
+
+  <h2>本文を全部は表示しません</h2>
+  <p>
+    一覧に出すのは、本文の先頭80文字ほどです。検索で当たったときは、当たった語の前後を同じくらいの長さで出します。
+    全文は、公式の埋め込みか TikTok でお読みください。本文は書かれたとおりに持ち、直しません。
+  </p>
+
+  <h2>AIの使い方</h2>
+  <p>
+    投稿の本文をAIで処理しません。要約・文章の生成・学習には使いません。
+    このサイトのプログラムを書くのには、AIを使っています。
+  </p>
+
+  <h2>検索した言葉は記録していません</h2>
+  <p>検索した言葉やアクセスの記録は取りません。アクセス解析も入れていません。</p>
+
+  <h2>漏れがあるもの・消されたとき</h2>
+  <p>
+    取り込みは、すべての投稿がそろうことを保証できません。
+    TikTok で消されたり直されたりした投稿が、しばらく前のまま残ることがあります（消えた投稿は、リンク先が開けません）。
+    見つけたら下のフォームから教えてください。確かめたうえで消します。
+  </p>
+
+  <h2>このサイトについて</h2>
+  <p>ハロー！プロジェクトおよび TikTok の運営会社とは関係のない、個人が作った非公式のサイトです。投稿の著作権は投稿した本人にあります。</p>
+  <p>広告は載せておらず、お金は一切受け取っていません。サイトの運営費は作者が払っています。</p>
+  <p>
+    TikTok の運営会社・ご本人・所属事務所から連絡があれば、確認のうえ速やかに投稿の削除、またはサイトの公開停止をします。
+    そのほかの方からの「消してほしい・載せないでほしい」というご連絡にも対応します。
+  </p>
+  <p>
+    ご連絡は、下のフォームから送ってください。投稿のURLかアカウント名だけで送れます。
+    返事が必要な場合は、連絡先も書いてください（返事のためだけに使います）。
+  </p>
+  <form id="td" class="td" autocomplete="off">
+    <label>投稿のURL または アカウント名（必須）
+      <input name="target" required maxlength="300" placeholder="例: https://www.tiktok.com/@…/video/… / @アカウント名"></label>
+    <label>連絡先（任意・メールアドレスなど）
+      <input name="contact" maxlength="200"></label>
+    <label>ひとこと（任意）
+      <textarea name="message" rows="3" maxlength="2000"></textarea></label>
+    <input name="website" class="hp" tabindex="-1" aria-hidden="true">
+    <button type="submit">送る</button>
+    <p id="td-msg" class="note" aria-live="polite"></p>
+  </form>
+
+  <h2>もしものとき</h2>
+  <p>
+    このサイトが持っている個人の情報は、上のフォームに書いてもらった連絡先（任意）とひとことだけです。
+    送信元のIPアドレスは、そのままの形では残していません。
+    データが漏れたなどが分かったときは、すぐにサイトを止め、必要ならデータベースを消して、このページでお知らせします。
+  </p>
+
+  <h2>確認している TikTok の決まりごと</h2>
+  <p>
+    <a href="https://www.tiktok.com/legal/page/row/terms-of-service/en">利用規約</a>（2026年11月25日に確認）は、
+    自動で情報を集めることや、許可のない複製・掲載を禁じています。このサイトは、許可をもらっているわけではありません。
+    そのため、持つものと見せる量をできるだけ少なくし、投稿は公式の埋め込みと TikTok へのリンクで見てもらう作りにして、
+    消してほしいという連絡にはすぐ対応します。
+  </p>
+  <p class="note">最終更新：2026年11月26日</p>
+</main>
+
+<footer class="site-foot">
+  <p><a href="/">本文から探す</a> ｜ <a href="/day">日付で見る</a></p>
+  <p class="share">このサイトを紹介する：<a href="https://x.com/intent/post?text=%E3%83%8F%E3%83%AD%E3%83%97%E3%83%AD%20TikTok%E6%A4%9C%E7%B4%A2%EF%BD%9C%E3%83%A1%E3%83%B3%E3%83%90%E3%83%BC%E3%81%A8OG%E3%81%AETikTok%E3%82%92%E3%80%81%E6%97%A5%E4%BB%98%E3%81%A8%E6%9C%AC%E6%96%87%E3%81%8B%E3%82%89%E6%8E%A2%E3%81%9B%E3%82%8B%E3%82%B5%E3%82%A4%E3%83%88%0Ahttps%3A%2F%2Ftiktok.karin-archive.com%2F" target="_blank" rel="noopener noreferrer">Twitter</a><a href="https://social-plugins.line.me/lineit/share?url=https%3A%2F%2Ftiktok.karin-archive.com%2F" target="_blank" rel="noopener noreferrer">LINE</a><button type="button" class="ghost" onclick="navigator.clipboard.writeText('https://tiktok.karin-archive.com/').then(()=>{this.textContent='コピーしました'})">URLをコピー</button></p>
+</footer>
+<script>
+// 削除・公開停止の依頼
+document.getElementById("td").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = document.getElementById("td-msg"), btn = f.querySelector("button");
+  btn.disabled = true;
+  msg.textContent = "送信中…";
+  try {
+    const r = await fetch("/api/takedown", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify(Object.fromEntries(new FormData(f))),
+    });
+    if (!r.ok) throw new Error(r.status === 429 ? "短い間に送りすぎです。少し待ってから" : String(r.status));
+    const d = await r.json().catch(() => ({}));
+    f.reset();
+    msg.textContent = "受け付けました" + (d.id ? `（受付番号 #${d.id}）` : "") + "。確認のうえ対応します。" +
+      (d.id ? "あとでお問い合わせいただくときのために、必要ならこの番号を控えておいてください。" : "");
+  } catch (err) {
+    msg.textContent = "送れませんでした（" + err.message + "）。時間をおいてもう一度お試しください。";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// 収録件数は増えていくので、その時の数を出す
+fetch("/api/accounts").then((r) => r.json()).then((d) => {
+  const got = d.accounts.filter((a) => a.posts > 0);
+  if (!got.length) return;
+  const n = (x) => Number(x).toLocaleString("ja-JP");
+  const total = got.reduce((s, a) => s + a.posts, 0);
+  document.getElementById("scale").textContent =
+    `いま ${n(got.length)} アカウント、${n(total)} 件の投稿が入っています。`;
+}).catch(() => {});
+</script>
+</body>
+</html>
