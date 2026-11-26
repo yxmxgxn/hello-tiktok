@@ -1,0 +1,36 @@
+{
+  "name": "hello-tiktok",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-01",
+  // *.workers.dev のURLとプレビューURLでは公開しない(カスタムドメインだけで出す)
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // すべて Worker を通す。合言葉(SITE_PASS)を画面にも掛けるため。
+    // 鍵を外すときは ["/api/*"] にすると、静的ファイルは Worker を通らず配信される
+    "run_worker_first": true
+  },
+  // 公開URL tiktok.karin-archive.com はダッシュボードで付けるカスタムドメイン
+  // (Workers & Pages → hello-tiktok → 設定 → ドメインとルート)。
+  // ここに routes を書くとデプロイ用トークンにゾーンの権限が要るので書かない
+  // 毎日 JST 20:00 に Discord へ件数と新着を報告する(src/worker.js の scheduled)
+  "triggers": {
+    "crons": ["0 11 * * *"]
+  },
+  // 1分あたりの同一IPからの公開API呼び出し上限(Workers のレート制限バインディング)
+  "unsafe": {
+    "bindings": [
+      { "name": "RL", "type": "ratelimit", "namespace_id": "1004", "simple": { "limit": 120, "period": 60 } }
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hello-tiktok",
+      // ダッシュボード → ストレージとデータベース → D1 → hello-tiktok
+      "database_id": "23c8036f-715c-42c1-b41c-64818dc30eec"
+    }
+  ]
+}
