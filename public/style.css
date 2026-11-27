@@ -275,6 +275,15 @@ main.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
 .emodal-stage { grid-area: card; position: relative; z-index: 1; min-width: 0; height: var(--card-h); }
 .emodal-card { position: absolute; inset: 0; visibility: hidden; pointer-events: none; overflow: hidden; background: #000; border-radius: 12px; }
 .emodal-card.on { visibility: visible; pointer-events: auto; }
+/* パソコン(広い画面): 前後の投稿を、カードの両側にうすく並べる(押すとそこへ移る)。‹ › の外側から画面の端まで */
+@media (min-width: 900px) and (pointer: fine) {
+  .emodal { overflow: hidden; }
+  .emodal-card.side-prev, .emodal-card.side-next { visibility: visible; pointer-events: auto; opacity: .38; cursor: pointer; }
+  .emodal-card.side-prev { transform: translateX(calc(-100% - 76px)); }
+  .emodal-card.side-next { transform: translateX(calc(100% + 76px)); }
+  .emodal-card.side-prev:hover, .emodal-card.side-next:hover { opacity: .55; }
+  .emodal-card.side-prev::after, .emodal-card.side-next::after { content: ""; position: absolute; inset: 0; z-index: 3; }
+}
 .emodal-card > iframe { width: 100%; height: 100%; border: 0; display: block; }
 /* 読み込み中は、枠の真ん中に「くるくる」 */
 .emodal-card:not(.ready)::before {
@@ -300,8 +309,12 @@ main.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
 }
 .emodal-next::before { transform: translateX(-2px) rotate(45deg); }
 .emodal-prev::before { transform: translateX(2px) rotate(-135deg); }
+/* カードの下の行: 左に日付と名前(@ID)、右に「TikTok で見る ↗」 */
+.emodal-foot { grid-area: link; position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: -4px; min-width: 0; }
+/* 長い名前は2行まで(日付の下に名前)。右の「TikTok で見る ↗」の高さに収まるので、下は動かない */
+.emodal-who { flex: 1 1 auto; min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere; font-size: .74rem; line-height: 1.35; color: rgba(255, 255, 255, .85); }
 .emodal-link {
-  grid-area: link; justify-self: end; position: relative; z-index: 1; margin-top: -4px;
+  flex: none;
   padding: 7px 14px; border-radius: 999px; background: rgba(255, 255, 255, .92); color: #1f1f1f;
   font-size: .85rem; text-decoration: none; white-space: nowrap;
 }
@@ -309,14 +322,20 @@ main.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
 .emodal-prev { grid-area: prev; }
 .emodal-next { grid-area: next; }
 .emodal-prev:disabled, .emodal-next:disabled { opacity: .3; cursor: default; }
-.emodal-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 40px; height: 40px; font-size: 1.4rem; }
+/* × は、文字だと字の高さの分だけ下にずれるので、細い線を2本、丸の真ん中で交差させる */
+.emodal-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 40px; height: 40px; font-size: 0; }
+.emodal-x::before, .emodal-x::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 1.5px; background: #262626;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.emodal-x::after { transform: translate(-50%, -50%) rotate(-45deg); }
 .emodal-count { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 1; text-align: center; font-size: .8rem; color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; pointer-events: none; }
 /* 狭い画面では、‹ › をカードの下に並べる */
 @media (max-width: 700px) {
   .emodal { --card-h: min(calc(100vh - 190px), calc(100vw * 16 / 9)); grid-template-columns: 1fr 1fr; grid-template-areas: "card card" "link link" "prev next"; align-content: center; padding: 12px 0 36px; row-gap: 10px; }
   .emodal-stage { width: calc(var(--card-h) * 9 / 16); justify-self: center; }
   @supports (height: 100dvh) { .emodal { --card-h: min(calc(100dvh - 190px), calc(100vw * 16 / 9)); } }
-  .emodal-link { margin-right: 16px; }
+  .emodal-foot { width: calc(var(--card-h) * 9 / 16); justify-self: center; padding: 0 12px; box-sizing: border-box; }
   .emodal-prev { justify-self: end; margin-right: 16px; }
   .emodal-next { justify-self: start; margin-left: 16px; }
 }

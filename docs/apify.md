@@ -1,6 +1,6 @@
 # Apify で毎日の新着を取る
 
-過去の分はブックマークレット(`collect/tiktok-collect.js`)で入れて、新着は Apify で取ります。仕組みと見守りは、インスタ版(`hello-insta`)と同じ形にします。
+過去の分はブックマークレット(`collect/tiktok-collect.js`)で入れて、新着は Apify で取ります。投稿の多い現役グループの公式7つは Apify では取らず、拡張(`collect/extension`)で手で回ります。組分けと入力の JSON は `python collect/groups.py` で作ります。仕組みと見守りは、インスタ版(`hello-insta`)と同じ形にします。
 
 > 受け口の `/api/crawl/apify` は `src/worker.js` にあります。手順 4(Webhook)は、サイトをデプロイしたあとに行います。
 >
@@ -83,11 +83,17 @@ Actor は [`clockworks/tiktok-profile-scraper`](https://apify.com/clockworks/tik
 
 投稿の多いアカウントは、この上に件数分がかかります。1日4本のペースが続くアカウントを毎日・2日分で取ると、月約 $1 です。
 
-よく投稿する人は「毎日」、あまりしない人は「週1回」(`oldestPostDateUnified` は `"8"`)の、2つのタスクに分けます。どちらに入れるかは、過去分がそろってから、投稿の頻度を数えて決めます。実行は朝 6:00(日本時間)ごろにします。
+3つのタスクに分けます。公式7つは入れません(拡張で回る)。組と入力の JSON は `python collect/groups.py` で作ります(`data/apify-<組>.json`)。
+
+| 組 | 入れる人 | `oldestPostDateUnified` | Cron(`Asia/Tokyo`) |
+|---|---|---|---|
+| 毎日 | 直近30日のうち15日以上に投稿 | `"2 days"` | `0 7 * * *` |
+| 週1回 | ほかの、90日以内に投稿がある人 | `"15 days"`(1回失敗しても次の回で拾える) | `10 7 * * 1` |
+| 月1回 | 最後の投稿が90日より前 | `"32 days"` | `15 7 1 * *` |
 
 ## 4. Webhook(サイトをデプロイしたあと)
 
-タスクの Integrations → Webhooks で、**4つのイベント**に同じ送り先とヘッダーを付けます。
+Actor の Integrations → Webhooks に付けます(3つのタスクに共通になる)。**4つのイベント**に同じ送り先とヘッダーを付けます。タスク側には付けません(2回届くため)。
 
 - `Run succeeded`
 - `Run failed`
@@ -131,4 +137,4 @@ Actor は [`clockworks/tiktok-profile-scraper`](https://apify.com/clockworks/tik
 | 楽曲 | `musicMeta.musicId` `musicName` `musicAuthor` `musicOriginal` | 曲名はローマ字で来ることがある。日本語の名前が入っていれば上書きしない |
 
 - `id` のない行は捨てて、件数だけ数えます。新着がない人の行は `note`、存在しないユーザー名の行は `errorCode` が付きます。
-- データセットは、使う項目だけに絞って読みます(`flatten` と `fields`)。本物の Apify で絞れるかは、デプロイ後の最初の実行で確かめます。再生数・いいね数・動画の URL は保存しません。
+- データセットは、使う項目だけに絞って読みます(`flatten` と `fields`。2026-11-27 の本物の実行で確認)。再生数・いいね数・動画の URL は保存しません。

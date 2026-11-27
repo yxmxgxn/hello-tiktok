@@ -354,7 +354,7 @@
     if (text) highlight(p, text, q); else p.textContent = "（本文なし）";
     li.appendChild(p);
     if (post.music_id) li.appendChild(musicRow(post));
-    li.appendChild(window.postActions(li, post.permalink));
+    li.appendChild(window.postActions(li, post.permalink, window.postLabel(post.ts, post.account, names)));
     return li;
   }
 
@@ -374,8 +374,8 @@
     var parts = [], q = $("q").value.trim(), sel = selected();
     if (q) parts.push("「" + q + "」");
     if (sel.length) {
-      var nm = sel.map(function (u) { return names[u] || u; });
-      parts.push(nm.length > 3 ? nm.slice(0, 3).join("・") + " ほか" + (nm.length - 3) + "人" : nm.join("・"));
+      // 条件の行は「名前@ユーザー名」と長く。3人以上は人数だけ
+      parts.push(sel.length >= 3 ? sel.length + "人" : sel.map(function (u) { return window.whoLabel(u, names); }).join("・"));
     } else if ($("act").checked) {
       parts.push("ハロプロ現役のみ");
     }
