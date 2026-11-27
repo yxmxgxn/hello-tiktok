@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ハロプロ TikTok 取得(公式を順に回る)",
+  "version": "1.0",
+  "description": "TikTok のプロフィール画面が読み込んだ投稿を、公式アカウントを順に開いて保存する",
+  "content_scripts": [
+    {
+      "matches": ["https://www.tiktok.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    }
+  ]
+}

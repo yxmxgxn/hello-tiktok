@@ -8,6 +8,8 @@ import html
 import json
 from pathlib import Path
 
+from common import collected
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 HIDDEN_MAX = 3  # プロフィールの数と一覧に並ぶ数の差として、許す件数
@@ -31,13 +33,13 @@ def main():
                 nick[a["name"].lower()] = a["nickName"]
 
     ids, clean = {}, {}
-    for d in load("tiktok_*.json"):
+    for d in collected():
         key = d["account"].lower()
         ids.setdefault(key, set()).update(p["id"] for p in d["posts"])
         if d.get("total") is not None:
             total[key] = d["total"]
-        # 新しいファイルほど後に読むので、最後の結果が残る
-        clean[key] = d.get("missing") == 0
+        # 一度でも取り逃しなく全部を読めていれば、そう数える
+        clean[key] = clean.get(key) or d.get("full")
 
     rows = []
     for user in accounts:

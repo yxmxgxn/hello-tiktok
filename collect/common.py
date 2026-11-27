@@ -1,9 +1,27 @@
-"""サイトの管理用APIに送る(合言葉は環境変数 CRAWL_TOKEN。値はファイルに書かない)。"""
+"""収集スクリプトの共通部分。管理用APIに送る合言葉は環境変数 CRAWL_TOKEN(値はファイルに書かない)。"""
+import glob
 import json
 import os
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def collected():
+    """data/tiktok_*.json を古い順に読み、1アカウントずつ { account, total, full, posts } で返す。
+
+    ブックマークレットは1ファイル1アカウント、拡張は1ファイルに複数。full は全投稿を取り終えたもの。
+    """
+    for path in sorted(glob.glob(str(ROOT / "data" / "tiktok_*.json")), key=os.path.getmtime):
+        with open(path, encoding="utf-8-sig") as f:
+            d = json.load(f)
+        if "accounts" in d:
+            yield from d["accounts"]
+        else:
+            yield {**d, "full": d.get("missing") == 0}
 
 
 def post_json(site, path, body):

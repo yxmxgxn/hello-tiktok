@@ -11,7 +11,7 @@ https://tiktok.karin-archive.com/
 | `src/worker.js` | 公開API と管理用API。正規化と bigram 化はここだけ |
 | `public/` | 画面(静的ファイル) |
 | `schema.sql` | D1 `hello-tiktok` のテーブル。デプロイのたびに流す |
-| `collect/` | 過去分の収集(ブックマークレット)と、サイトへ入れるスクリプト |
+| `collect/` | 収集(ブックマークレット・公式を順に回る拡張 `extension/`)と、サイトへ入れるスクリプト |
 | `docs/apify.md` | 毎日の新着(Apify)の設定 |
 | `dev/server.mjs` | 手元で確かめるサーバー |
 
@@ -24,6 +24,15 @@ https://tiktok.karin-archive.com/
     $env:CRAWL_TOKEN = "dev-token"
     python collect/accounts.py --site http://localhost:8787
     python collect/upload.py --site http://localhost:8787
+
+## 公式7つを順に回る(Chrome の拡張)
+
+1. `chrome://extensions` で「デベロッパー モード」をオンにし、「パッケージ化されていない拡張機能を読み込む」で `collect/extension` を選ぶ。拡張の詳細で「シークレット モードでの実行を許可する」もオンにする
+2. シークレット ウィンドウ(ログアウト)で、どれかの TikTok のプロフィールを開き、右下の「新着だけ」か「全部」を押す
+3. パズルが出たら手で解く。終わると JSON が1つ保存されるので、`data/` に置く
+4. 下のコマンドで本番に入れる
+
+シークレット ウィンドウを閉じると、拡張が覚えた「前回どこまで読んだか」は消える(次の「新着だけ」は直近14日分を読む)。
 
 ## 本番に入れる
 

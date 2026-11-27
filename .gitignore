@@ -2,3 +2,4 @@
 data/
 # wrangler の手元の作業用
 .wrangler/
+__pycache__/

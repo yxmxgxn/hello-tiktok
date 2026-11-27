@@ -1,4 +1,4 @@
-"""ブックマークレットで保存した JSON(data/tiktok_*.json)を、サイトに入れる。
+"""ブックマークレットや拡張で保存した JSON(data/tiktok_*.json)を、サイトに入れる。
 
     python collect/upload.py --site <サイトのURL>                  # 全部
     python collect/upload.py --site <サイトのURL> --account <名前>  # 1人だけ
@@ -6,15 +6,11 @@
 同じ投稿は何度送っても1件のまま(変わっていなければ書き直さない)。先に accounts.py で対象を送っておく。
 """
 import argparse
-import glob
 import json
-import os
 import sys
-from pathlib import Path
 
-from common import post_json
+from common import ROOT, collected, post_json
 
-ROOT = Path(__file__).resolve().parent.parent
 BATCH = 100
 
 
@@ -24,11 +20,14 @@ def main():
     ap.add_argument("--account")
     args = ap.parse_args()
 
+    # 対象(count-input.json)から外した人のファイルは、残っていても送らない
+    listed = json.loads((ROOT / "collect" / "count-input.json").read_text(encoding="utf-8"))["profiles"]
+    targets = {u.lower() for u in listed}
     # 同じアカウントのファイルが複数あれば合わせる(新しいファイルの値を使う)
     accounts = {}
-    for path in sorted(glob.glob(str(ROOT / "data" / "tiktok_*.json")), key=os.path.getmtime):
-        with open(path, encoding="utf-8-sig") as f:
-            d = json.load(f)
+    for d in collected():
+        if d["account"].lower() not in targets:
+            continue
         accounts.setdefault(d["account"], {}).update({p["id"]: p for p in d["posts"]})
     if args.account:
         accounts = {a: v for a, v in accounts.items() if a.lower() == args.account.lower()}

@@ -1,5 +1,6 @@
 // TikTok 公式の埋め込み(Embed Player)を、押したときだけ、暗い背景のポップアップで開く(トップと /day で共通)。
-// window.postActions(li, permalink) は、投稿の下の「▶ ここで見る」「TikTok で見る ↗」の行を作る。
+// window.postActions(li, permalink, label) は、投稿の下の「▶ ここで見る」「TikTok で見る ↗」の行を作る。
+// label(window.postLabel)は、ポップアップのカードの下の「2026/11/26 名前@ID」。
 // ポップアップの中では、「‹」「›」・キーボードの ← → ・(パソコンは)暗い背景でのホイールで、一覧の前後の投稿に移れる。
 // 閉じるのは「×」・背景・Esc。前後の投稿は、開いた投稿が表示し終わってから、裏で先に読み込んでおく
 (function () {
@@ -55,6 +56,11 @@
     el.appendChild(frame);
     modal.querySelector(".emodal-stage").appendChild(el);
     cards.push({ li: li, el: el });
+    // パソコンで、両側にうすく見えている前後のカードは、押すとそこへ移る(中は TikTok の画面なので、上に重ねた幕が受ける)
+    el.addEventListener("click", function () {
+      if (el.classList.contains("side-prev")) step(-1);
+      else if (el.classList.contains("side-next")) step(1);
+    });
     // 15秒たっても読み込めなければ、右下の「TikTok で見る」を案内する
     setTimeout(function () { if (!loaded && !el.classList.contains("ready")) el.classList.add("fail"); }, 15000);
     return el;
@@ -79,17 +85,28 @@
         c.el.remove();
         return false;
       });
+      mark(li);
     }, 1500);
+  }
+
+  // いま出している投稿(on)と、一覧の前(side-prev)・後(side-next)のカードに印を付ける。
+  // 前後は、広い画面(パソコン)だけ、カードの両側にうすく見せる(style.css)。出していないカードの動画は止める
+  function mark(li) {
+    var all = items(li), i = all.indexOf(li);
+    cards.forEach(function (c) {
+      var k = all.indexOf(c.li) - i;
+      c.el.classList.toggle("on", k === 0);
+      c.el.classList.toggle("side-prev", k === -1);
+      c.el.classList.toggle("side-next", k === 1);
+      if (k !== 0) pause(c.el);
+    });
   }
 
   // 枠の高さは、投稿によらず同じ(縦長 9:16。画面に収まる高さまで)。大きさは style.css で決める
   function show(li) {
     current = li;
-    var el = ensure(li);
-    cards.forEach(function (c) {
-      c.el.classList.toggle("on", c.el === el);
-      if (c.el !== el) pause(c.el);
-    });
+    ensure(li);
+    mark(li);
     // 前後の投稿(なければ「‹」「›」は押せない)。後ろの投稿が無くても、「さらに古い投稿」があれば押して読み込む
     var all = items(li), i = all.indexOf(li);
     modal.querySelector(".emodal-prev").disabled = i <= 0;
@@ -98,6 +115,7 @@
     modal.querySelector(".emodal-count").textContent = (i + 1) + " / " + all.length + (more && !more.hidden ? "+" : "");
     // 右下の「TikTok で見る ↗」も、この投稿に
     modal.querySelector(".emodal-link").href = urlOf(li);
+    modal.querySelector(".emodal-who").textContent = li.getAttribute("data-who") || "";
     // 後ろの一覧も、いま出している投稿に合わせて動かす
     li.scrollIntoView({ block: "nearest" });
     warm(li);
@@ -172,18 +190,25 @@
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = "TikTok で見る ↗";
+    // カードの下の行: 左に「2026/11/26 宮本佳林@ID」、右に「TikTok で見る ↗」
+    var who = document.createElement("span");
+    who.className = "emodal-who";
+    var foot = document.createElement("div");
+    foot.className = "emodal-foot";
+    foot.appendChild(who);
+    foot.appendChild(link);
     modal.appendChild(bg);
     modal.appendChild(btn("emodal-x", "閉じる", "×", close));
     modal.appendChild(btn("emodal-prev", "前の投稿", "‹", function () { step(-1); }));
     modal.appendChild(stage);
     modal.appendChild(btn("emodal-next", "次の投稿", "›", function () { step(1); }));
-    modal.appendChild(link);
+    modal.appendChild(foot);
     modal.appendChild(count);
     // パソコン: 暗い背景(カードの外)でマウスのホイールを回すと、前後の投稿へ。下に回すと次。
-    // カードの中は TikTok の画面なので、スクロールは TikTok が受ける
+    // 出している投稿の中は TikTok の画面なので、操作は TikTok が受ける(両側のうすいカードの上は、前後へ移る)
     var wheelAt = 0;
     modal.addEventListener("wheel", function (e) {
-      if (stage.contains(e.target)) return;
+      if (e.target.closest && e.target.closest(".emodal-card.on")) return;
       e.preventDefault();
       var now = Date.now();
       if (now - wheelAt < 450 || Math.abs(e.deltaY) + Math.abs(e.deltaX) < 8) return;   // 勢いのある1回で1つだけ
@@ -198,7 +223,17 @@
   }
 
   // 投稿の下の操作の行:「▶ ここで見る」(ポップアップで開く)と「TikTok で見る ↗」(元の投稿へ)
-  function actions(li, permalink) {
+  // 「名前@ユーザー名」。1人で複数アカウントの人の名前に付く「（@…）」は、重なるので外す
+  window.whoLabel = function (account, names) {
+    return String(names[account] || account).replace(/（@[^）]*）$/, "") + "@" + account;
+  };
+  // 「2026/11/26 宮本佳林@ID」。ポップアップのカードの下に出す
+  window.postLabel = function (ts, account, names) {
+    return String(ts).slice(0, 10).replace(/-/g, "/") + " " + window.whoLabel(account, names);
+  };
+
+  function actions(li, permalink, label) {
+    if (label) li.setAttribute("data-who", label);
     var url = permalink;
     li.setAttribute("data-url", url);
     var row = document.createElement("div");
